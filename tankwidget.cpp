@@ -94,15 +94,16 @@ bool TankWidget::event(QEvent *event)
     {
     case QEvent::TouchBegin:
         {
-            QRect tankrect;
-            if(mytank.d == dir_left || mytank.d == dir_right)
-                tankrect = QRect(QPoint(mytank.p.x()-TankSize*13,mytank.p.y()-TankSize*9),QSize(TankSize*26,TankSize*18));
-            else if(mytank.d == dir_down || mytank.d == dir_up)
-                tankrect = QRect(QPoint(mytank.p.x()-TankSize*9,mytank.p.y()-TankSize*13),QSize(TankSize*18,TankSize*26));
+            //QRect tankrect;
+            //if(mytank.d == dir_left || mytank.d == dir_right)
+            //    tankrect = QRect(QPoint(mytank.p.x()-TankSize*13,mytank.p.y()-TankSize*9),QSize(TankSize*26,TankSize*18));
+            //else if(mytank.d == dir_down || mytank.d == dir_up)
+            //    tankrect = QRect(QPoint(mytank.p.x()-TankSize*9,mytank.p.y()-TankSize*13),QSize(TankSize*18,TankSize*26));
             QTouchEvent* touch = static_cast<QTouchEvent*>(event);
             QList<QTouchEvent::TouchPoint> touch_list = touch->points();
-            if(tankrect.contains(touch_list.at(0).position().x(),touch_list.at(0).position().y()))
-                TankIdChoose = 1;
+            //if(tankrect.contains(touch_list.at(0).position().x(),touch_list.at(0).position().y()))
+                //TankIdChoose = 1;
+            tou_lastposition =  touch_list.at(0).position().toPoint();
             event->accept();
             return true;
 
@@ -116,19 +117,83 @@ bool TankWidget::event(QEvent *event)
                 //判断是否有触摸点处于TouchPointPressed或TouchPointMoved或TouchPointStationary或TouchPointReleased
             }
             QList<QTouchEvent::TouchPoint> touch_list = touch->points();
-            if(TankIdChoose == 1)
+            //if(TankIdChoose == 1)
+            //{
+            //    touch_list.at(0).position().x();
+            //    touch_list.at(0).position().y();
+            //    mytank.p.setX(touch_list.at(0).position().x());
+            //    mytank.p.setY(touch_list.at(0).position().y());
+            //}
+            int subx_y;
+            subx_y = abs(touch_list.at(0).position().toPoint().x()-tou_lastposition.x())-\
+                     abs(touch_list.at(0).position().toPoint().y()-tou_lastposition.y());
+            if(subx_y > 10)
             {
-                touch_list.at(0).position().x();
-                touch_list.at(0).position().y();
-                mytank.p.setX(touch_list.at(0).position().x());
-                mytank.p.setY(touch_list.at(0).position().y());
+                if((touch_list.at(0).position().toPoint().x()-tou_lastposition.x()) > 0)
+                {
+                    m_dir = move_right;
+                }
+                else if((touch_list.at(0).position().toPoint().x()-tou_lastposition.x()) < 0)
+                {
+                    m_dir = move_left;
+                }
             }
+            if(subx_y < -10)
+            {
+                if((touch_list.at(0).position().toPoint().y()-tou_lastposition.y()) > 0)
+                {
+                    m_dir = move_down;
+                }
+                else if((touch_list.at(0).position().toPoint().y()-tou_lastposition.y()) < 0)
+                {
+                    m_dir = move_up;
+                }
+            }
+            switch(m_dir)
+            {
+                case move_up:
+                    mytank.d=dir_up;
+                    mytank.p.setY(mytank.p.y()-3);
+                    if(mytank.p.y()<TankSize*13)
+                    {
+                        mytank.p.setY(TankSize*13);
+                    }
+                break;
+                case move_down:
+                    mytank.d=dir_down;
+                    mytank.p.setY(mytank.p.y()+3);
+                    if(mytank.p.y()>height()-TankSize*13)
+                    {
+                        mytank.p.setY(height()-TankSize*13);
+                    }
+                break;
+                case move_left:
+                    mytank.d=dir_left;
+                    mytank.p.setX(mytank.p.x()-3);
+                    if(mytank.p.x()<TankSize*13)
+                    {
+                       mytank.p.setX(TankSize*13);
+                    }
+                break;
+                case move_right:
+                    mytank.d=dir_right;
+                    mytank.p.setX(mytank.p.x()+3);
+                    if(mytank.p.x()>width()-TankSize*13)
+                    {
+                        mytank.p.setX(width()-TankSize*13);
+                    }
+                break;
+                default:
+                break;
+            }
+
             event->accept();
             return true;
         }
     case QEvent::TouchEnd:
         {
-             TankIdChoose = 0;
+             //TankIdChoose = 0;
+            m_dir = move_null;
         }
     }
     update();
