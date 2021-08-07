@@ -84,7 +84,7 @@ void TankWidget::keyPressEvent(QKeyEvent *event)
                 mytank.p.setY(13);
              break;
     }
-    update();
+    //update();
 }
 
 bool TankWidget::event(QEvent *event)
@@ -132,10 +132,12 @@ bool TankWidget::event(QEvent *event)
                 if((touch_list.at(0).position().toPoint().x()-tou_lastposition.x()) > 0)
                 {
                     m_dir = move_right;
+                    tou_lastposition =  touch_list.at(0).position().toPoint();
                 }
                 else if((touch_list.at(0).position().toPoint().x()-tou_lastposition.x()) < 0)
                 {
                     m_dir = move_left;
+                    tou_lastposition =  touch_list.at(0).position().toPoint();
                 }
             }
             if(subx_y < -10)
@@ -143,48 +145,13 @@ bool TankWidget::event(QEvent *event)
                 if((touch_list.at(0).position().toPoint().y()-tou_lastposition.y()) > 0)
                 {
                     m_dir = move_down;
+                    tou_lastposition =  touch_list.at(0).position().toPoint();
                 }
                 else if((touch_list.at(0).position().toPoint().y()-tou_lastposition.y()) < 0)
                 {
                     m_dir = move_up;
+                    tou_lastposition =  touch_list.at(0).position().toPoint();
                 }
-            }
-            switch(m_dir)
-            {
-                case move_up:
-                    mytank.d=dir_up;
-                    mytank.p.setY(mytank.p.y()-3);
-                    if(mytank.p.y()<TankSize*13)
-                    {
-                        mytank.p.setY(TankSize*13);
-                    }
-                break;
-                case move_down:
-                    mytank.d=dir_down;
-                    mytank.p.setY(mytank.p.y()+3);
-                    if(mytank.p.y()>height()-TankSize*13)
-                    {
-                        mytank.p.setY(height()-TankSize*13);
-                    }
-                break;
-                case move_left:
-                    mytank.d=dir_left;
-                    mytank.p.setX(mytank.p.x()-3);
-                    if(mytank.p.x()<TankSize*13)
-                    {
-                       mytank.p.setX(TankSize*13);
-                    }
-                break;
-                case move_right:
-                    mytank.d=dir_right;
-                    mytank.p.setX(mytank.p.x()+3);
-                    if(mytank.p.x()>width()-TankSize*13)
-                    {
-                        mytank.p.setX(width()-TankSize*13);
-                    }
-                break;
-                default:
-                break;
             }
 
             event->accept();
@@ -196,7 +163,5 @@ bool TankWidget::event(QEvent *event)
             m_dir = move_null;
         }
     }
-    update();
-
     return QWidget::event(event);
 }

@@ -33,6 +33,8 @@ set(PROJECT_SOURCES
         tankwidget.h
         tank.cpp
         tank.h
+        tankrefresh.cpp
+        tankrefresh.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
